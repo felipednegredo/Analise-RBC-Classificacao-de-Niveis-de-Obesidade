@@ -6,8 +6,10 @@ from base import ler_base, definir_similaridade
 
 data = {}
 
+
 def checkbox_value(var):
     return "Sim" if var.get() == 1 else "Não"
+
 
 # Constantes para os campos
 FIELDS = [
@@ -38,15 +40,20 @@ SELECT_FIELDS = ["Genero",
 
 SELECT_OPTIONS = [
     ["Masculino", "Feminino"],
-    ["Não","As vezes","Frequentemente","Sempre"],
-    ["Nunca","As Vezes","Frequente","Sempre"],
+    ["Não", "As vezes", "Frequentemente", "Sempre"],
+    ["Nunca", "As Vezes", "Frequentemente", "Sempre"],
     ["Carro", "Transporte público", "Bicicleta", "Caminhada"]
 ]
 
+
 # Função para registrar os dados
-def register(entries, last_register_table, output_table,PESOS):
+def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
     """Função para registrar os dados.
         Args:
+            entries: Dicionário com os campos e valores
+            last_register_table: Tabela com o último cadastro
+            output_table: Tabela de saída
+            ATTRIBUTES_WEIGHTS: 
         entries: Dicionário com os campos e valores
         last_register_table: Tabela com o último cadastro
         output_table: Tabela de saída
@@ -60,23 +67,22 @@ def register(entries, last_register_table, output_table,PESOS):
         else:
             data[field] = entry.get()
 
-
     # Atualiza o label do último cadastro
     data = list(data.values())
     data = [str(value) for value in data]
     # retiro campo altura e peso e calcula o IMC
     altura = float(data[2].replace(",", "."))
     peso = float(data[3].replace(",", "."))
-    imc = round(peso / (altura ** 2),2)
+    imc = round(peso / (altura ** 2), 2)
     data.append(imc)
 
     data_copy = data
 
-    # Get the indices of 'Altura' and 'Peso' in FIELDS
+    # Pega os índices de 'Altura' e 'Peso'
     altura_index = FIELDS.index('Altura')
     peso_index = FIELDS.index('Peso')
 
-    # Remove 'Altura' and 'Peso' from data_copy
+    # Remove 'Altura' e 'Peso' de data_copy
     data_copy = [v for i, v in enumerate(data_copy) if i not in [altura_index, peso_index]]
 
     # Adiciona o último cadastro na tabela
@@ -84,48 +90,74 @@ def register(entries, last_register_table, output_table,PESOS):
 
     messagebox.showinfo("Cadastro", "Cadastro realizado com sucesso!")
 
-    # Read base data
+    # Ler a base de dados
     base_data = ler_base()
 
-    # Calculate similarity
-    similar_data = definir_similaridade(base_data, data, PESOS)
+    # Calcula a similaridade
+    similar_data = definir_similaridade(base_data, data, ATTRIBUTES_WEIGHTS)
 
-    print(similar_data)
-
-    # Clear existing data in output_table
+    # Limpa a tabela de saída
     for i in output_table.get_children():
         output_table.delete(i)
 
-    # Insert new data into output_table
+    # Adiciona os dados similares na tabela de saída
     for item in similar_data:
-        # Convert the item to a list if it's a dictionary
+        # Se o item for um dicionário, transforma em uma lista
         if isinstance(item, dict):
             item = list(item.values())
         output_table.insert("", "end", values=item)
 
     return data
 
+
 # Função para classificar a tabela
 def sortby(tree, col, descending):
-        """Função para classificar os itens da tabela. Args: tree: tabela col: coluna descending: ordem de classificação """
-        data = [(tree.set(child, col), child) for child in tree.get_children('')]
-        data.sort(reverse=descending)
+    """Função para classificar os itens da tabela. Args: tree: tabela col: coluna descending: ordem de classificação
 
-        for indx, item in enumerate(data):
-            tree.move(item[1], '', indx)
+    Args:
+        tree:
+        col:
+        descending:
 
-        tree.heading(col, command=lambda col=col: sortby(tree, col, int(not descending)))
+    Returns:
+        object:
+    """
+    data = [(tree.set(child, col), child) for child in tree.get_children('')]
+    data.sort(reverse=descending)
+
+    for indx, item in enumerate(data):
+        tree.move(item[1], '', indx)
+
+    tree.heading(col, command=lambda col=col: sortby(tree, col, int(not descending)))
+
 
 def save_weights(ATTRIBUTES_WEIGHTS, frame):
-    """Função para salvar os pesos. Args: ATTRIBUTES_WEIGHTS: Dicionário com os pesos frame: Frame com os pesos"""
+    """Função para salvar os pesos. Args: ATTRIBUTES_WEIGHTS: Dicionário com os pesos frame: Frame com os pesos
+
+    Args:
+        ATTRIBUTES_WEIGHTS: Dicionário com os pesos
+        frame: Frame com os pesos
+
+    Returns:
+        object: retorna os pesos
+    """
     for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
         entry = frame.grid_slaves(row=i + 1, column=1)[0]
         ATTRIBUTES_WEIGHTS[attribute] = float(entry.get())
     messagebox.showinfo("Pesos", "Pesos salvos com sucesso!")
 
+    print(ATTRIBUTES_WEIGHTS)
+
+    return ATTRIBUTES_WEIGHTS
+
+
 # Chama a função para criar a interface gráfica
 def create_interface():
-    """Função para criar a interface gráfica. Args: None. Returns: None."""
+    """Função para criar a interface gráfica. Args: None. Returns: None.
+
+    Returns:
+        object: 
+    """
     root = tk.Tk()
     root.title("Interface de Cadastro")
     root.tk.call("source", "azure.tcl")
@@ -162,7 +194,7 @@ def create_interface():
     frame.grid_columnconfigure(0, weight=1)
     frame.grid_rowconfigure(0, weight=1)
 
-        # Create a dictionary for the attributes and weights
+    # Create a dictionary for the attributes and weights
     ATTRIBUTES_WEIGHTS = {
         "Idade": 0.2,
         "Gênero": 0.4,
@@ -184,22 +216,23 @@ def create_interface():
     for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
         label = ttk.Label(frame, text=attribute)
         label.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
-        var = tk.StringVar(value=str(weight))  # Set initial value to the weight
-        entry = ttk.Entry(frame, textvariable=var)
+        entry = ttk.Entry(frame)
+        entry.insert(0, weight)
         entry.grid(row=i + 1, column=1, padx=5, pady=5, sticky="w")
 
-    save_weights_button = ttk.Button(frame, text="Salvar Pesos", command=lambda: save_weights(ATTRIBUTES_WEIGHTS, frame))
+    save_weights_button = ttk.Button(frame, text="Salvar Pesos",
+                                     command=lambda: ATTRIBUTES_WEIGHTS.update(save_weights(ATTRIBUTES_WEIGHTS, frame)))
     save_weights_button.grid(row=len(ATTRIBUTES_WEIGHTS) + 1, column=0, columnspan=2, padx=5, pady=5)
 
     # Label para mostrar o último cadastro
     last_register_table = ttk.Treeview(tab2, height=1)
     last_register_table['columns'] = (
-    "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
-    "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
-    "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC")
+        "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
+        "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
+        "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC")
 
     for column in last_register_table['columns']:
-        last_register_table.column(column, width=75, minwidth=20)
+        last_register_table.column(column, width=85, minwidth=20)
         last_register_table.heading(column, text=column)
 
     last_register_table['show'] = 'headings'
@@ -210,11 +243,14 @@ def create_interface():
     output_table = ttk.Treeview(tab2, height=10)  # Define a altura da tabela
 
     # Define as colunas
-    output_table['columns'] = ("Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes", "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso", "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC", "Similaridade")
+    output_table['columns'] = (
+    "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
+    "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
+    "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC", "Obesidade", "Similaridade")
 
     # Formata as colunas
     for column in output_table['columns']:
-        output_table.column(column, width=75, minwidth=20)
+        output_table.column(column, width=85, minwidth=20)
         output_table.heading(column, text=column)
 
     # Oculta a coluna '#0'
@@ -229,22 +265,24 @@ def create_interface():
         label.grid(row=i // 2, column=i % 2 * 2, padx=20, pady=10, sticky="w")
         if field in CHECKBOX_FIELDS:
             var = tk.IntVar()
-            checkbox = ttk.Checkbutton(tab1, variable=var,command=lambda var=var : checkbox_value(var))
+            checkbox = ttk.Checkbutton(tab1, variable=var, command=lambda var=var: checkbox_value(var))
             checkbox.grid(row=i // 2, column=i % 2 * 2 + 1, padx=20, pady=10, sticky="w")
             entries[field] = var
         elif field in SELECT_FIELDS:
             var = tk.StringVar()
             select = ttk.Combobox(tab1, textvariable=var, state="readonly")
             select['values'] = SELECT_OPTIONS[SELECT_FIELDS.index(field)]
-            select.grid(row=i//2, column=i%2*2+1, padx=20, pady=10, sticky="w")
+            select.grid(row=i // 2, column=i % 2 * 2 + 1, padx=20, pady=10, sticky="w")
             entries[field] = var
         else:
             entry = ttk.Entry(tab1)  # Add to tab1 instead of root
-            entry.grid(row=i//2, column=i%2*2+1, padx=20, pady=10, sticky="w")
+            entry.grid(row=i // 2, column=i % 2 * 2 + 1, padx=20, pady=10, sticky="w")
             entries[field] = entry
 
-    register_button = ttk.Button(tab1, text="Cadastrar", command=lambda: register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS))
-    register_button.grid(row=len(FIELDS)//2+1, column=0, columnspan=4, padx=20, pady=20)
+    register_button = ttk.Button(tab1, text="Cadastrar",
+                                 command=lambda: register(entries, last_register_table, output_table,
+                                                          ATTRIBUTES_WEIGHTS))
+    register_button.grid(row=len(FIELDS) // 2 + 1, column=0, columnspan=4, padx=20, pady=20)
     root.mainloop()
 
 
