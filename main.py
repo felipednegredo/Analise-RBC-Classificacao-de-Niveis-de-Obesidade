@@ -116,15 +116,12 @@ def sortby(tree, col, descending):
 
         tree.heading(col, command=lambda col=col: sortby(tree, col, int(not descending)))
 
-def save_edit(edit_entry, row_id, column_id, weights_table):
-    """Function to save the edited value in the table. Args: edit_entry: Entry widget containing the edited value row_id: ID of the row being edited column_id: ID of the column being edited"""
-    new_value = edit_entry.get()
-    row_values = weights_table.item(row_id)['values']
-    column_index = int(column_id[1]) - 1
-    row_values[column_index] = new_value
-    weights_table.item(row_id, values=row_values)
-    edit_entry.destroy()
-
+def save_weights(ATTRIBUTES_WEIGHTS, frame):
+    """Função para salvar os pesos. Args: ATTRIBUTES_WEIGHTS: Dicionário com os pesos frame: Frame com os pesos"""
+    for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
+        entry = frame.grid_slaves(row=i + 1, column=1)[0]
+        ATTRIBUTES_WEIGHTS[attribute] = float(entry.get())
+    messagebox.showinfo("Pesos", "Pesos salvos com sucesso!")
 
 # Chama a função para criar a interface gráfica
 def create_interface():
@@ -157,38 +154,49 @@ def create_interface():
 
     notebook.pack(expand=True, fill='both')
 
-    ATRIBUTOS = ["Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes", "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso", "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC", "Similaridade"]
+    # Create a frame for the grid layout
+    frame = ttk.Frame(tab3)
+    frame.pack(fill="both", expand=True)
 
-    PESOS = [
-        0.2, # Idade
-        0.4, # Genero
-        0.9, # Bebe álcool com frequencia?
-        0.5, # Você come alimentos com alto teor calórico com frequência?
-        0.6, # Quantas vezes costuma comer legumes em suas refeições?
-        0.7, # Quantas refeições principais você tem diariamente?
-        0.5, # Você monitora as calorias que você come diariamente?
-        0.3, # Você fuma?
-        0.5, # Quanta litros de água você bebe diariamente?
-        0.8, # Um membro da família sofreu ou sofre de excesso de peso?
-        0.7, # Com que frequência você tem atividade física?
-        0.6, # Você come qualquer alimento entre as refeições?
-        0.5, # Qual transporte você costuma usar?
-        1, # IMC
-    ]
+    # Configure the grid
+    frame.grid_columnconfigure(0, weight=1)
+    frame.grid_rowconfigure(0, weight=1)
 
+        # Create a dictionary for the attributes and weights
+    ATTRIBUTES_WEIGHTS = {
+        "Idade": 0.2,
+        "Gênero": 0.4,
+        "Bebe álcool com frequência?": 0.9,
+        "Alimentos com alto teor calórico": 0.5,
+        "Quantidade de legumes": 0.6,
+        "Refeições diárias": 0.7,
+        "Monitora calorias": 0.5,
+        "Fumante": 0.3,
+        "Consumo de água": 0.5,
+        "Histórico familiar de excesso de peso": 0.8,
+        "Atividade física": 0.7,
+        "Alimentos entre refeições": 0.6,
+        "Transporte utilizado": 0.5,
+        "IMC": 1,
+    }
 
-    # Campos para a tabela de pesos
-    for i, atributo in enumerate(ATRIBUTOS):
-        label = ttk.Label(tab3, text=atributo)
-        label.grid(row=i, column=0, padx=20, pady=10, sticky="w")
-        entry = ttk.Entry(tab3)
-        entry.grid(row=i, column=1, padx=20, pady=10, sticky="w")
-        PESOS[atributo] = entry
+    # Fields for the weights table
+    for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
+        label = ttk.Label(frame, text=attribute)
+        label.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
+        var = tk.StringVar(value=str(weight))  # Set initial value to the weight
+        entry = ttk.Entry(frame, textvariable=var)
+        entry.grid(row=i + 1, column=1, padx=5, pady=5, sticky="w")
 
+    save_weights_button = ttk.Button(frame, text="Salvar Pesos", command=lambda: save_weights(ATTRIBUTES_WEIGHTS, frame))
+    save_weights_button.grid(row=len(ATTRIBUTES_WEIGHTS) + 1, column=0, columnspan=2, padx=5, pady=5)
 
     # Label para mostrar o último cadastro
     last_register_table = ttk.Treeview(tab2, height=1)
-    last_register_table['columns'] = ("Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes", "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso", "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC")
+    last_register_table['columns'] = (
+    "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
+    "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
+    "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC")
 
     for column in last_register_table['columns']:
         last_register_table.column(column, width=75, minwidth=20)
@@ -235,7 +243,7 @@ def create_interface():
             entry.grid(row=i//2, column=i%2*2+1, padx=20, pady=10, sticky="w")
             entries[field] = entry
 
-    register_button = ttk.Button(tab1, text="Cadastrar", command=lambda: register(entries, last_register_table, output_table,PESOS))
+    register_button = ttk.Button(tab1, text="Cadastrar", command=lambda: register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS))
     register_button.grid(row=len(FIELDS)//2+1, column=0, columnspan=4, padx=20, pady=20)
     root.mainloop()
 
