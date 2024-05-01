@@ -340,7 +340,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         else:
             similaridade += BACDF_VALORES[BACDF_pos][3] * PESOS_POR_ATRIBUTO["Bebe álcool com frequência?"]
 
-        caso['Similaridade'] = round(similaridade, 2)
+        caso['Similaridade'] = round(similaridade/100, 2)
 
         caso['IMC'] = round(IMC, 2)
 
