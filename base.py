@@ -2,48 +2,48 @@ import pandas as pd
 import os
 
 # Valores de similaridade de IMC (Índice de Massa Corporal)
-IMC_VALORES = [[1, 0.5, 0.25], [0.5, 1, 0.5], [0.25, 0.5, 1]]
+IMC_VALORES = [[1.00, 0.50, 0.25], [0.50, 1.00, 0.50], [0.25, 0.50, 1.00]]
 
 # Valores de similaridade de BQLDAD (Quantos litros de água você bebe diariamente?)
-BQLDAD_VALORES = [[1.0, 0.6, 0.1],
-                  [0.6, 1.0, 0.6],
-                  [0.1, 0.6, 1.0]]
+BQLDAD_VALORES = [[1.00, 0.60, 0.1],
+                  [0.60, 1.0, 0.60],
+                  [0.10, 0.60, 1.0]]
 
 # Valores de similaridade de BACDF (Bebe álcool com frequencia?)
-BACDF_VALORES = [[1.0, 0.8, 0.5, 0.0],
-                 [0.8, 1.0, 0.5, 0.3],
-                 [0.5, 0.5, 1.0, 0.8],
-                 [0.0, 0.3, 0.8, 1.0]]
+BACDF_VALORES = [[1.00, 0.80, 0.50, 0.00],
+                 [0.80, 1.00, 0.50, 0.30],
+                 [0.50, 0.50, 1.00, 0.80],
+                 [0.00, 0.30, 0.80, 1.00]]
 
 # Valores de similaridade de QVZCLESR (Quantas vezes costuma comer legumes em suas refeições?)
-QVZCLESR_VALORES = [[1.0, 0.8, 0.4, 0.0],
-                    [0.8, 1.0, 0.8, 0.4],
-                    [0.4, 0.8, 1.0, 0.8],
-                    [0.0, 0.4, 0.8, 1.0]]
+QVZCLESR_VALORES = [[1.00, 0.80, 0.40, 0.00],
+                    [0.80, 1.00, 0.80, 0.40],
+                    [0.40, 0.80, 1.00, 0.80],
+                    [0.00, 0.40, 0.80, 1.00]]
 
 # Valores de similaridade de QRTND (Quantas refeições principais você tem diariamente?)
-QRTND_VALORES = [[1.0, 0.8, 0.4, 0.2],
-                 [0.8, 1.0, 0.8, 0.4],
-                 [0.4, 0.8, 1.0, 0.8],
-                 [0.2, 0.4, 0.8, 1.0]]
+QRTND_VALORES = [[1.00, 0.80, 0.40, 0.20],
+                 [0.80, 1.00, 0.80, 0.40],
+                 [0.40, 0.80, 1.00, 0.80],
+                 [0.20, 0.40, 0.80, 1.00]]
 
 # Valores de similaridade de CQFPAF (Com que frequência você tem atividade física?)
-CQFPAF_VALORES = [[1.0, 0.0, 0.0],
-                  [0.0, 1.0, 0.5],
-                  [0.0, 0.5, 1.0]]
+CQFPAF_VALORES = [[1.00, 0.00, 0.00],
+                  [0.00, 1.00, 0.50],
+                  [0.00, 0.50, 1.00]]
 
 # Valores de similaridade de VCQAEAR (Você come qualquer alimento entre as refeições?)
-VCQAEAR_VALORES = [[1.0, 0.2, 0.2, 0.0],
-                   [0.2, 1.0, 0.5, 0.5],
-                   [0.2, 0.5, 1.0, 0.8],
-                   [0.0, 0.5, 0.8, 1.0]]
+VCQAEAR_VALORES = [[1.00, 0.20, 0.20, 0.00],
+                   [0.20, 1.00, 0.50, 0.50],
+                   [0.20, 0.50, 1.00, 0.80],
+                   [0.00, 0.50, 0.80, 1.00]]
 
 # Valores de similaridade de QTCU (Qual transporte você costuma usar?)
-QTCU_VALORES = [[1.0, 0.9, 0.0, 0.0, 0.0],
-                [0.9, 1.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 1.0, 1.0],
-                [0.0, 0.0, 1.0, 1.0, 1.0],
-                [0.0, 0.0, 1.0, 1.0, 1.0]]
+QTCU_VALORES = [[1.00, 0.90, 0.00, 0.00, 0.00],
+                [0.90, 1.00, 0.00, 0.00, 0.00],
+                [0.00, 0.00, 1.00, 1.00, 1.00],
+                [0.00, 0.00, 1.00, 1.00, 1.00],
+                [0.00, 0.00, 1.00, 1.00, 1.00]]
 
 '''
 PESOS_POR_ATRIBUTO = [

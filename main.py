@@ -14,14 +14,14 @@ def checkbox_value(var):
 
 # Constantes para os campos
 FIELDS = [
-    "Idade", "Genero", "Altura", "Peso", "Bebe álcool com frequencia?",
+    "Idade", "Genero", "Altura (Ex: 1,60)", "Peso (Ex: 55,00)", "Bebe álcool com frequencia?",
     "Você come alimentos com alto teor calórico com frequência?",
     "Quantas vezes costuma comer legumes em suas refeições?",
     "Quantas refeições principais você tem diariamente?",
     "Você monitora as calorias que você come diariamente?", "Você fuma?",
     "Quanta litros de água você bebe diariamente?",
     "Um membro da família sofreu ou sofre de excesso de peso?",
-    "Com que frequência você tem atividade física?",
+    "Com que frequência você tem atividade física? (por semana)",
     "Você come qualquer alimento entre as refeições?",
     "Qual transporte você costuma usar?"
 ]
