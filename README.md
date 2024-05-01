@@ -22,12 +22,27 @@ Observação importante:
 
 
 ## Créditos
-Este projeto utiliza partes do Azure-ttk-theme, que está sob a licença MIT.
+
+Este projeto utiliza componentes do tema [Azure-ttk-theme](https://github.com/rdbende/Azure-ttk-theme/tree/main), criado por [Benedek Dévényi (@rdbende)](https://github.com/rdbende), sob a licença MIT. Agradecemos ao autor pelo seu excelente trabalho.
 
 
 ## Rodando o projeto
 
 Para rodar o projeto, rode os seguintes comandos
+
+Clone o projeto
+
+```bash
+  git clone https://github.com/felipednegredo/Trabalho_IA_M2.git
+```
+
+Entre no diretório do projeto:
+
+```bash
+  cd Trabalho_IA_M2
+```
+
+Instale as dependências:
 
 ```bash
   pip install -r requirements.txt
@@ -42,3 +57,13 @@ Rode o projeto:
 ## Link da DataBase usada
 Para mais informações e dados sobre os níveis de obesidade, consulte o conjunto de dados de níveis de obesidade disponível no Kaggle.
 [Obesity Levels](https://www.kaggle.com/datasets/fatemehmehrparvar/obesity-levels)
+
+## Autores
+
+- [@felipednegredo](https://github.com/felipednegredo)
+- [@VanessaBdL](https://github.com/VanessaBdL)
+- [@yuri-rodriguesv](https://github.com/yuri-rodriguesv)
+
+## Licença
+[![AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
