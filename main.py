@@ -111,6 +111,24 @@ def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
 
     return data
 
+def limpar_campos(entries):
+    """Função para limpar os campos. Args: entries: Dicionário com os campos e valores
+
+    Args:
+        entries: Dicionário com os campos e valores
+
+    Returns:
+        object: retorna os campos limpos
+    """
+    for entry in entries.values():
+        if isinstance(entry, tk.Entry):
+            entry.delete(0, "end")
+        elif isinstance(entry, tk.StringVar):
+            entry.set("")
+        elif isinstance(entry, tk.IntVar):
+            entry.set(0)
+    return entries
+
 
 # Função para classificar a tabela
 def sortby(tree, col, descending):
@@ -287,6 +305,8 @@ def create_interface():
     register_button = ttk.Button(tab1, text="Cadastrar",
                                  command=lambda: register(entries, last_register_table, output_table,
                                                           ATTRIBUTES_WEIGHTS))
+    reset_button = ttk.Button(tab1, text="Limpar Campos", command=lambda: limpar_campos(entries))
+    reset_button.grid(row=len(FIELDS) // 2 + 1, column=2, columnspan=2, padx=20, pady=20)
     register_button.grid(row=len(FIELDS) // 2 + 1, column=0, columnspan=4, padx=20, pady=20)
     root.mainloop()
 
