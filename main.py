@@ -81,8 +81,8 @@ def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
     data_copy = data
 
     # Pega os índices de 'Altura' e 'Peso'
-    altura_index = FIELDS.index('Altura')
-    peso_index = FIELDS.index('Peso')
+    altura_index = FIELDS.index("Altura (Ex: 1,60)")
+    peso_index = FIELDS.index('Peso (Ex: 55,00)')
 
     # Remove 'Altura' e 'Peso' de data_copy
     data_copy = [v for i, v in enumerate(data_copy) if i not in [altura_index, peso_index]]
