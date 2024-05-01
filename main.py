@@ -165,7 +165,7 @@ def create_interface():
     diretorio_atual = os.path.dirname(os.path.realpath(__file__))
     # Construa o caminho para o arquivo "azure.tcl" usando o diretório atual
     caminho_azure_tcl = os.path.join(diretorio_atual, "..", "Trabalho_IA_M2", "azure.tcl")
-    root.tk.call("source", "azure.tcl")
+    root.tk.call("source", caminho_azure_tcl)
     root.tk.call("set_theme", "dark")
 
     style = ttk.Style()
