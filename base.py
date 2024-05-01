@@ -143,7 +143,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         CQFPAF = caso["Com que frequência você tem atividade física?"]
         VCQAEAR = caso["Você come qualquer alimento entre as refeições?"]
         QTCU = caso["Qual transporte você costuma usar?"]
-        IMC = round(caso["IMC"])
+        IMC = round(caso["IMC"],2)
         NO = caso["Nível de obesidade"]
 
         max_idade = max([int(caso["Idade"]) for caso in casos_base])
@@ -341,6 +341,8 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
             similaridade += BACDF_VALORES[BACDF_pos][3] * PESOS_POR_ATRIBUTO["Bebe álcool com frequência?"]
 
         caso['Similaridade'] = round(similaridade, 2)
+
+        caso['IMC'] = round(IMC, 2)
 
     casos_base = sorted(casos_base, key=lambda x: x['Similaridade'], reverse=True)
 
