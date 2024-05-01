@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -8,7 +9,7 @@ data = {}
 
 
 def checkbox_value(var):
-    return "Sim" if var.get() == 1 else "Não"
+    return "Sim" if var == 1 else "Não"
 
 
 # Constantes para os campos
@@ -42,7 +43,7 @@ SELECT_OPTIONS = [
     ["Masculino", "Feminino"],
     ["Não", "As vezes", "Frequentemente", "Sempre"],
     ["Nunca", "As Vezes", "Frequentemente", "Sempre"],
-    ["Carro", "Transporte público", "Bicicleta", "Caminhada"]
+    ["Carro", "Transporte público", "Moto","Bicicleta", "Caminhada"]
 ]
 
 
@@ -62,6 +63,7 @@ def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
     for field, entry in entries.items():
         if field in CHECKBOX_FIELDS:
             data[field] = entry.get()
+            data[field] = checkbox_value(data[field])
         elif field in SELECT_FIELDS:
             data[field] = entry.get()
         else:
@@ -160,6 +162,9 @@ def create_interface():
     """
     root = tk.Tk()
     root.title("Interface de Cadastro")
+    diretorio_atual = os.path.dirname(os.path.realpath(__file__))
+    # Construa o caminho para o arquivo "azure.tcl" usando o diretório atual
+    caminho_azure_tcl = os.path.join(diretorio_atual, "..", "Trabalho_IA_M2", "azure.tcl")
     root.tk.call("source", "azure.tcl")
     root.tk.call("set_theme", "dark")
 
@@ -243,7 +248,7 @@ def create_interface():
     output_table = ttk.Treeview(tab2, height=10)  # Define a altura da tabela
 
     # Define as colunas
-    output_table['columns'] = (
+    output_table['columns'] = ("Index",
     "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
     "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
     "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC", "Obesidade", "Similaridade")

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 # Valores de similaridade de IMC (Índice de Massa Corporal)
 IMC_VALORES = [[1, 0.5, 0.25], [0.5, 1, 0.5], [0.25, 0.5, 1]]
@@ -69,8 +70,13 @@ def ler_base():
         Returns:
         data: Lista de dicionários com os dados
     """
+
+    diretorio_atual = os.path.dirname(os.path.realpath(__file__))
+    # Construa o caminho para o arquivo "azure.tcl" usando o diretório atual
+    caminho_base_xlsx = os.path.join(diretorio_atual, "..", "Trabalho_IA_M2", "Obesidade_V2.xlsx")
+
     # Ler o arquivo Excel
-    dataframe = pd.read_excel('Obesidade_V2.xlsx', 'Obesidade - Tratado')
+    dataframe = pd.read_excel(caminho_base_xlsx, 'Obesidade - Tratado')
 
     casos_base = []
 
@@ -92,11 +98,11 @@ def ler_base():
         IMC = (r['IMC'])
         NO = (r['Nível de obesidade'])
         casos_base.append(
-            [idade, genero, BACDF, CACATCCF, QVZCLESR, QRTND, MACQCD, FUMA, BQLDAD, AMDFSOSCEDP, CQFPAF, VCQAEAR, QTCU,
+            [i,idade, genero, BACDF, CACATCCF, QVZCLESR, QRTND, MACQCD, FUMA, BQLDAD, AMDFSOSCEDP, CQFPAF, VCQAEAR, QTCU,
              IMC, NO])
 
     # Transformar os dados em um DataFrame
-    df = pd.DataFrame(casos_base, columns=['Idade', 'Genero', 'Bebe álcool com frequencia?',
+    df = pd.DataFrame(casos_base, columns=['Index','Idade', 'Genero', 'Bebe álcool com frequencia?',
                                            'Você come alimentos com alto teor calórico com frequência?',
                                            'Quantas vezes costuma comer legumes em suas refeições?',
                                            'Quantas refeições principais você tem diariamente?',
@@ -164,7 +170,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
             similaridade += 1 * PESOS_POR_ATRIBUTO["Você fuma?"]
 
         if AMDFSOSCEDP == novo_caso[9]:  # Um membro da família sofreu ou sofre de excesso de peso?
-            similaridade += 1 * PESOS_POR_ATRIBUTO["Um membro da família sofreu ou sofre de excesso de peso?"]
+            similaridade += 1 * PESOS_POR_ATRIBUTO["Histórico familiar de excesso de peso"]
 
         ''' Com que frequência você tem atividade física? '''
 
@@ -292,7 +298,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
 
         ''' Qual transporte você costuma usar? '''
 
-        if QTCU == "Carro":  # Qual transporte você costuma usar?
+        if QTCU == "Carro" or QTCU == "Moto":  # Qual transporte você costuma usar?
             QTCU_pos = 0
         elif QTCU == "Transporte público":
             QTCU_pos = 1
@@ -303,7 +309,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         else:
             QTCU_pos = 4
 
-        if novo_caso[12] == "Carro":
+        if novo_caso[12] == "Carro" or novo_caso[12] == "Moto":
             similaridade += QTCU_VALORES[QTCU_pos][0] * PESOS_POR_ATRIBUTO["Transporte utilizado"]
         elif novo_caso[12] == "Transporte público":
             similaridade += QTCU_VALORES[QTCU_pos][1] * PESOS_POR_ATRIBUTO["Transporte utilizado"]
