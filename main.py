@@ -235,7 +235,7 @@ def create_interface():
         "IMC": 1,
     }
 
-    # Fields for the weights table
+    # Campos para os pesos
     for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
         label = ttk.Label(frame, text=attribute)
         label.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
