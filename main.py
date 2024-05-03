@@ -43,14 +43,15 @@ SELECT_OPTIONS = [
     ["Masculino", "Feminino"],
     ["Não", "As vezes", "Frequentemente", "Sempre"],
     ["Nunca", "As Vezes", "Frequentemente", "Sempre"],
-    ["Carro", "Transporte público", "Moto","Bicicleta", "Caminhada"]
+    ["Carro", "Transporte público", "Moto", "Bicicleta", "Caminhada"]
 ]
 
 
 # Função para registrar os dados
-def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
+def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS, label_caso_similar):
     """Função para registrar os dados.
         Args:
+            label_caso_similar:  Label para mostrar o caso mais similar
             entries: Dicionário com os campos e valores
             last_register_table: Tabela com o último cadastro
             output_table: Tabela de saída
@@ -87,6 +88,10 @@ def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
     # Remove 'Altura' e 'Peso' de data_copy
     data_copy = [v for i, v in enumerate(data_copy) if i not in [altura_index, peso_index]]
 
+    # Remove o último cadastro da tabela
+    for i in last_register_table.get_children():
+        last_register_table.delete(i)
+
     # Adiciona o último cadastro na tabela
     last_register_table.insert("", "end", values=data_copy)
 
@@ -98,18 +103,25 @@ def register(entries, last_register_table, output_table, ATTRIBUTES_WEIGHTS):
     # Calcula a similaridade
     similar_data = definir_similaridade(base_data, data, ATTRIBUTES_WEIGHTS)
 
+    # Atribui um texto sobre o mais similar e o seu índice e grau de similaridade e obsesidade
+    label_caso_similar[
+        "text"] = f"O caso mais similar é o de índice {similar_data[0]['Index']} da base, com grau de similaridade de {round(similar_data[0]['Similaridade'], 2)}% e nível de obesidade de {similar_data[0]['Nível de obesidade']} "
+
     # Limpa a tabela de saída
     for i in output_table.get_children():
         output_table.delete(i)
 
     # Adiciona os dados similares na tabela de saída
     for item in similar_data:
-        # Se o item for um dicionário, transforma em uma lista
+        # Se o ‘item’ for um dicionário, transforma em uma lista
         if isinstance(item, dict):
             item = list(item.values())
         output_table.insert("", "end", values=item)
 
+    limpar_campos(entries)
+
     return data
+
 
 def limpar_campos(entries):
     """Função para limpar os campos. Args: entries: Dicionário com os campos e valores
@@ -171,9 +183,9 @@ def save_weights(ATTRIBUTES_WEIGHTS, frame):
     return ATTRIBUTES_WEIGHTS
 
 
-# Chama a função para criar a interface gráfica
+# Chama a função para criar a ‘interface’ gráfica
 def create_interface():
-    """Função para criar a interface gráfica. Args: None. Returns: None.
+    """Função para criar a ‘interface’ gráfica. Args: None. Returns: None.
 
     Returns:
         object:
@@ -204,6 +216,7 @@ def create_interface():
     tab2 = ttk.Frame(notebook)
     notebook.add(tab2, text='Tabela de Similaridade')
 
+    # Cria a terceira aba
     tab3 = ttk.Frame(notebook)
     notebook.add(tab3, text='Tabela de Pesos')
 
@@ -218,7 +231,7 @@ def create_interface():
     frame.grid_rowconfigure(0, weight=1)
 
     # Cria o dicinário com os pesos
-    ATTRIBUTES_WEIGHTS = {
+    attributes_weights = {
         "Idade": 0.2,
         "Genero": 0.4,
         "Bebe álcool com frequencia?": 0.9,
@@ -235,8 +248,8 @@ def create_interface():
         "IMC": 1,
     }
 
-    # Campos para os pesos
-    for i, (attribute, weight) in enumerate(ATTRIBUTES_WEIGHTS.items()):
+    # Carrega a alteração dos pesos
+    for i, (attribute, weight) in enumerate(attributes_weights.items()):
         label = ttk.Label(frame, text=attribute)
         label.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
         entry = ttk.Entry(frame)
@@ -244,8 +257,8 @@ def create_interface():
         entry.grid(row=i + 1, column=1, padx=5, pady=5, sticky="w")
 
     save_weights_button = ttk.Button(frame, text="Salvar Pesos",
-                                     command=lambda: ATTRIBUTES_WEIGHTS.update(save_weights(ATTRIBUTES_WEIGHTS, frame)))
-    save_weights_button.grid(row=len(ATTRIBUTES_WEIGHTS) + 1, column=0, columnspan=2, padx=5, pady=5)
+                                     command=lambda: attributes_weights.update(save_weights(attributes_weights, frame)))
+    save_weights_button.grid(row=len(attributes_weights) + 1, column=0, columnspan=2, padx=5, pady=5)
 
     # Label para mostrar o último cadastro
     last_register_table = ttk.Treeview(tab2, height=1)
@@ -267,9 +280,12 @@ def create_interface():
 
     # Define as colunas
     output_table['columns'] = ("Index",
-    "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico", "Quantidade de legumes",
-    "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água", "Histórico familiar de excesso de peso",
-    "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC", "Obesidade", "Similaridade")
+                               "Idade", "Gênero", "Bebe álcool com frequência?", "Alimentos com alto teor calórico",
+                               "Quantidade de legumes",
+                               "Refeições diárias", "Monitora calorias", "Fumante", "Consumo de água",
+                               "Histórico familiar de excesso de peso",
+                               "Atividade física", "Alimentos entre refeições", "Transporte utilizado", "IMC",
+                               "Obesidade", "Similaridade")
 
     # Formata as colunas
     for column in output_table['columns']:
@@ -278,6 +294,10 @@ def create_interface():
 
     # Oculta a coluna '#0'
     output_table['show'] = 'headings'
+
+    label_caso_similar = ttk.Label(tab2, text="Caso similar")
+
+    label_caso_similar.pack(padx=10, pady=10)
 
     # Adiciona a tabela à tab2
     output_table.pack(padx=10, pady=10)
@@ -304,7 +324,7 @@ def create_interface():
 
     register_button = ttk.Button(tab1, text="Cadastrar",
                                  command=lambda: register(entries, last_register_table, output_table,
-                                                          ATTRIBUTES_WEIGHTS))
+                                                          attributes_weights, label_caso_similar))
     reset_button = ttk.Button(tab1, text="Limpar Campos", command=lambda: limpar_campos(entries))
     reset_button.grid(row=len(FIELDS) // 2 + 1, column=2, columnspan=2, padx=20, pady=20)
     register_button.grid(row=len(FIELDS) // 2 + 1, column=0, columnspan=4, padx=20, pady=20)
@@ -312,4 +332,3 @@ def create_interface():
 
 
 create_interface()
-

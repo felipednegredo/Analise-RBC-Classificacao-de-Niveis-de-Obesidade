@@ -15,30 +15,30 @@ BACDF_VALORES = [[1.00, 0.80, 0.50, 0.00],
                  [0.50, 0.50, 1.00, 0.80],
                  [0.00, 0.30, 0.80, 1.00]]
 
-# Valores de peso_base de QVZCLESR (Quantas vezes costuma comer legumes em suas refeições?)
+# Valores de peso_base de QVZCLESR (Quantas vezes costuma comer legumes nas suas refeições?)
 QVZCLESR_VALORES = [[1.00, 0.80, 0.40, 0.00],
                     [0.80, 1.00, 0.80, 0.40],
                     [0.40, 0.80, 1.00, 0.80],
                     [0.00, 0.40, 0.80, 1.00]]
 
-# Valores de peso_base de QRTND (Quantas refeições principais você tem diariamente?)
+# Valores de peso_base de QRTND (Quantas refeições principais tem diariamente?)
 QRTND_VALORES = [[1.00, 0.80, 0.40, 0.20],
                  [0.80, 1.00, 0.80, 0.40],
                  [0.40, 0.80, 1.00, 0.80],
                  [0.20, 0.40, 0.80, 1.00]]
 
-# Valores de peso_base de CQFPAF (Com que frequência você tem atividade física?)
+# Valores de peso_base de CQFPAF (Com que frequência tem atividade física?)
 CQFPAF_VALORES = [[1.00, 0.00, 0.00],
                   [0.00, 1.00, 0.50],
                   [0.00, 0.50, 1.00]]
 
-# Valores de peso_base de VCQAEAR (Você come qualquer alimento entre as refeições?)
+# Valores de peso_base de VCQAEAR (Come qualquer alimento entre as refeições?)
 VCQAEAR_VALORES = [[1.00, 0.20, 0.20, 0.00],
                    [0.20, 1.00, 0.50, 0.50],
                    [0.20, 0.50, 1.00, 0.80],
                    [0.00, 0.50, 0.80, 1.00]]
 
-# Valores de peso_base de QTCU (Qual transporte você costuma usar?)
+# Valores de peso_base de QTCU (Qual transporte costuma usar?)
 QTCU_VALORES = [[1.00, 0.90, 0.00, 0.00, 0.00],
                 [0.90, 1.00, 0.00, 0.00, 0.00],
                 [0.00, 0.00, 1.00, 1.00, 1.00],
@@ -98,11 +98,10 @@ def ler_base():
         QTCU = (r['Qual transporte você costuma usar?'])
         IMC = (r['IMC'])
         NO = (r['Nível de obesidade'])
-        SIM = (r['Similaridade'])
         casos_base.append(
             [i, idade, genero, BACDF, CACATCCF, QVZCLESR, QRTND, MACQCD, FUMA, BQLDAD, AMDFSOSCEDP, CQFPAF, VCQAEAR,
              QTCU,
-             IMC, NO, SIM])
+             IMC, NO])
 
     # Transformar os dados em um DataFrame
     df = pd.DataFrame(casos_base, columns=['Index', 'Idade', 'Genero', 'Bebe álcool com frequencia?',
@@ -115,7 +114,7 @@ def ler_base():
                                            'Com que frequência você tem atividade física?',
                                            'Você come qualquer alimento entre as refeições?',
                                            'Qual transporte você costuma usar?', 'IMC', 'Nível de obesidade',
-                                           'Similaridade'])
+                                           ])
 
     # Convert the DataFrame to a list of dictionaries
     data = df.to_dict('records')
@@ -154,22 +153,20 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         VCQAEAR = caso["Você come qualquer alimento entre as refeições?"]
         QTCU = caso["Qual transporte você costuma usar?"]
         IMC = round(caso["IMC"], 2)
-        NO = caso["Nível de obesidade"]
-        index = caso['Index']
         max_idade = max([int(caso["Idade"]) for caso in casos_base])
         max_imc = max([float(abs(caso["IMC"])) for caso in casos_base])
 
-        peso_base += PESOS_POR_ATRIBUTO["Idade"] * (1 - abs((idade - int(novo_caso[0])) / (max_idade)))
+        peso_base += PESOS_POR_ATRIBUTO["Idade"] * (1 - abs((idade - int(novo_caso[0])) / max_idade))
         novo_caso[2] = novo_caso[2].replace(',', '.')
         novo_caso[3] = novo_caso[3].replace(',', '.')
         IMC_casoNovo = float(novo_caso[3]) / (float(novo_caso[2]) ** 2)
 
-        peso_base += PESOS_POR_ATRIBUTO["IMC"] * (1 - abs(IMC - float(IMC_casoNovo)) / (max_imc))
+        peso_base += PESOS_POR_ATRIBUTO["IMC"] * (1 - abs(IMC - float(IMC_casoNovo)) / max_imc)
 
         if genero == novo_caso[1]:  # Genero
             peso_base += 1 * PESOS_POR_ATRIBUTO["Genero"]
 
-        if CACATCCF == novo_caso[5]:  # Você come alimentos com alto teor calórico com frequência?
+        if CACATCCF == novo_caso[5]:  # Come alimentos com alto teor calórico com frequência?
             peso_base += 1 * PESOS_POR_ATRIBUTO["Você come alimentos com alto teor calórico com frequência?"]
 
         if MACQCD == novo_caso[8]:  # Você monitora as calorias que você come diariamente? if novo_caso[8] == "Sim":
@@ -190,7 +187,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         else:
             CQFPAF_pos = 2
 
-        if CQFPAF == 0:  # Com que frequência você tem atividade física?
+        if CQFPAF == 0:  # Com que frequência tem atividade física?
             peso_base += CQFPAF_VALORES[CQFPAF_pos][0] * PESOS_POR_ATRIBUTO[
                 "Com que frequência você tem atividade física?"]
         elif CQFPAF == 1 or CQFPAF == 2:
@@ -211,7 +208,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         elif VCQAEAR == "Sempre":
             VCQAEAR_pos = 3
 
-        if novo_caso[13] == "Nunca":  # Você come qualquer alimento entre as refeições?
+        if novo_caso[13] == "Nunca":  # Come qualquer alimento entre as refeições?
             peso_base += VCQAEAR_VALORES[VCQAEAR_pos][0] * PESOS_POR_ATRIBUTO[
                 "Você come qualquer alimento entre as refeições?"]
         elif novo_caso[13] == "As Vezes":
@@ -246,7 +243,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
 
         ''' Quantas vezes costuma comer legumes em suas refeições? '''
 
-        if QVZCLESR == 0:  # Quantas vezes costuma comer legumes em suas refeições?
+        if QVZCLESR == 0:  # Quantas vezes costuma comer legumes nas suas refeições?
             QVZCLESR_pos = 0
         elif QVZCLESR == 1:
             QVZCLESR_pos = 1
@@ -270,7 +267,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
 
         ''' Quantas refeições principais você tem diariamente? '''
 
-        if QRTND == 1:  # Quantas refeições principais você tem diariamente?
+        if QRTND == 1:  # Quantas refeições principais tem diariamente?
             QRTND_pos = 0
         elif QRTND == 2:
             QRTND_pos = 1
@@ -313,7 +310,7 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
 
         ''' Qual transporte você costuma usar? '''
 
-        if QTCU == "Carro" or QTCU == "Moto":  # Qual transporte você costuma usar?
+        if QTCU == "Carro" or QTCU == "Moto":  # Qual transporte costuma usar?
             QTCU_pos = 0
         elif QTCU == "Transporte público":
             QTCU_pos = 1
@@ -339,8 +336,8 @@ def definir_similaridade(casos_base, novo_caso, PESOS_POR_ATRIBUTO):
         caso['Similaridade'] = (peso_base / peso_total) * 100
         caso['IMC'] = round(IMC, 2)
 
-
     casos_base = sorted(casos_base, key=lambda x: x['Similaridade'], reverse=True)
-    print(f"O valor FINAL da peso_base é {peso_base}")
+    print(
+        f"O valor final da peso_base é {peso_base}, com o caso com maior representando {round(casos_base[0]['Similaridade'], 2)}% de similaridade.")
+    print(f"Tendo como grau de obesidade: {casos_base[0]['Nível de obesidade']}")
     return casos_base
-
