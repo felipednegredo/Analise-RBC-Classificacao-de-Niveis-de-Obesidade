@@ -33,13 +33,13 @@ Para rodar o projeto, rode os seguintes comandos
 Clone o projeto
 
 ```bash
-  git clone https://github.com/felipednegredo/Trabalho_IA_M2.git
+  git clone https://github.com/felipednegredo/Analise-RBC-Classificacao-de-Niveis-de-Obesidade.git
 ```
 
 Entre no diretório do projeto:
 
 ```bash
-  cd Trabalho_IA_M2
+    cd Analise-RBC-Classificacao-de-Niveis-de-Obesidade
 ```
 
 Instale as dependências:
